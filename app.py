@@ -1,19 +1,14 @@
 import streamlit as st
 import pickle
-import torch
 import requests
-import os
 from pathlib import Path
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 from sentence_transformers import SentenceTransformer
-import faiss
-from dotenv import load_dotenv
 import streamlit.components.v1 as components
 
 # ----------------- Load ENV -----------------
-load_dotenv()
-RECAPTCHA_SITE_KEY = os.getenv("RECAPTCHA_SITE_KEY")
-RECAPTCHA_SECRET_KEY = os.getenv("RECAPTCHA_SECRET_KEY")
+RECAPTCHA_SITE_KEY = st.secrets["RECAPTCHA_SITE_KEY"]
+RECAPTCHA_SECRET_KEY = st.secrets["RECAPTCHA_SECRET_KEY"]
 
 # ----------------- Config -----------------
 MODEL_NAME = "google/flan-t5-base"
