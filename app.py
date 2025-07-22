@@ -21,7 +21,8 @@ def load_model(model_name):
     global _tokenizer, _model
     if _tokenizer is None or _model is None:
         _tokenizer = AutoTokenizer.from_pretrained(model_name)
-        _model = AutoModelForSeq2SeqLM.from_pretrained(model_name, device_map="auto")
+        _model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
+        _model.to("cpu")
     return _tokenizer, _model
 
 def load_index():
