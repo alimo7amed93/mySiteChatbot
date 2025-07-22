@@ -63,6 +63,22 @@ def get_answer(question: str, threshold: float = 0.5) -> str:
 # ----------------- Streamlit App -----------------
 st.set_page_config(page_title="Personal Chatbot", layout="centered")
 st.title("🤖 My Personal ChatBot")
+
+# Styling
+st.markdown("""
+    <style>
+    .chat-card {
+        background-color: rgba(255, 255, 255, 0.9);
+        padding: 1.5rem;
+        border-radius: 1rem;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        margin-top: 1.5rem;
+        font-size: 1.05rem;
+        line-height: 1.6;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
 st.markdown("""
 ### 💬 Ask me a question
 
@@ -92,7 +108,7 @@ if st.button("Submit"):
     else:
         with st.spinner("Thinking..."):
             response = get_answer(user_input.strip())
-            st.markdown(f"**Bot:** {response}")
+            st.markdown(f'<div class="chat-card"><strong>Bot:</strong> {response}</div>', unsafe_allow_html=True)
         # Reset math challenge after successful submit
         st.session_state.num1 = random.randint(1, 10)
         st.session_state.num2 = random.randint(1, 10)
