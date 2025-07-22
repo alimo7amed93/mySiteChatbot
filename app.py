@@ -1,9 +1,14 @@
 import streamlit as st
 import pickle
-import random
+import requests
 from pathlib import Path
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 from sentence_transformers import SentenceTransformer
+import streamlit.components.v1 as components
+
+# ----------------- Load ENV -----------------
+RECAPTCHA_SITE_KEY = st.secrets["RECAPTCHA_SITE_KEY"]
+RECAPTCHA_SECRET_KEY = st.secrets["RECAPTCHA_SECRET_KEY"]
 
 # ----------------- Config -----------------
 MODEL_NAME = "google/flan-t5-base"
@@ -60,31 +65,50 @@ def get_answer(question: str, threshold: float = 0.5) -> str:
     tokenizer, model = load_model(MODEL_NAME)
     return generate_response(context, question, tokenizer, model)
 
+# ----------------- reCAPTCHA Verification -----------------
+def verify_recaptcha(response_token):
+    url = "https://www.google.com/recaptcha/api/siteverify"
+    payload = {
+        "secret": RECAPTCHA_SECRET_KEY,
+        "response": response_token
+    }
+    r = requests.post(url, data=payload)
+    result = r.json()
+    return result.get("success", False)
+
 # ----------------- Streamlit App -----------------
 st.set_page_config(page_title="Personal Chatbot", layout="centered")
 st.title("🤖 My Personal ChatBot")
 
-# Generate simple math challenge
-if "num1" not in st.session_state:
-    st.session_state.num1 = random.randint(1, 10)
-    st.session_state.num2 = random.randint(1, 10)
-correct_answer = st.session_state.num1 + st.session_state.num2
-
-# User input and challenge
+# User input text box
 user_input = st.text_input("Ask your question:")
-user_math_answer = st.text_input(f"What is {st.session_state.num1} + {st.session_state.num2}?")
+
+# Render reCAPTCHA widget
+components.html(
+    f"""
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <form action="?" method="POST">
+        <div class="g-recaptcha" data-sitekey="{RECAPTCHA_SITE_KEY}"></div>
+        <br/>
+        <input type="submit" value="Send" />
+    </form>
+    """,
+    height=150,
+)
+
+# Get reCAPTCHA token from URL query params
+recaptcha_token = st.query_params.get("g-recaptcha-response", [None])[0]
 
 if st.button("Submit"):
-    if not user_input.strip():
-        st.warning("Please enter a question.")
-    elif not user_math_answer.strip().isdigit():
-        st.error("Please answer the math challenge with a number.")
-    elif int(user_math_answer.strip()) != correct_answer:
-        st.error("Incorrect math answer. Try again.")
+    if not recaptcha_token:
+        st.error("Please complete the reCAPTCHA before submitting.")
     else:
-        with st.spinner("Thinking..."):
-            response = get_answer(user_input.strip())
-            st.markdown(f"**Bot:** {response}")
-        # Reset math challenge after successful submit
-        st.session_state.num1 = random.randint(1, 10)
-        st.session_state.num2 = random.randint(1, 10)
+        if verify_recaptcha(recaptcha_token):
+            if user_input.strip():
+                with st.spinner("Thinking..."):
+                    response = get_answer(user_input.strip())
+                    st.markdown(f"**Bot:** {response}")
+            else:
+                st.warning("Please enter a question.")
+        else:
+            st.error("Failed to verify reCAPTCHA. Try again.")
