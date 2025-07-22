@@ -63,6 +63,8 @@ def get_answer(question: str, threshold: float = 0.5) -> str:
 # ----------------- Streamlit App -----------------
 st.set_page_config(page_title="Personal Chatbot", layout="centered")
 st.title("🤖 My Personal ChatBot")
+st.write("""For e.g. What is Ali Mohamed's current job title and where does he work? What are Ali Mohamed's core areas of expertise? or What technical tools and platforms does he use?
+""")
 
 # Generate simple math challenge
 if "num1" not in st.session_state:
