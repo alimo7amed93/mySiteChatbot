@@ -85,9 +85,7 @@ user_input = st.text_input("Ask your question:")
 # Render reCAPTCHA widget
 components.html(
     f"""
-    <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit"
-    async defer>
-    </script>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <form action="?" method="POST">
         <div class="g-recaptcha" data-sitekey="{RECAPTCHA_SITE_KEY}"></div>
         <br/>
