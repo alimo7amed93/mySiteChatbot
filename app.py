@@ -67,9 +67,9 @@ st.markdown("""
 ### 💬 Ask me a question
 
 You can try questions like:
-- **What is Ali Mohamed's current job title and where does he work?**
-- **What are Ali Mohamed's core areas of expertise?**
-- **What technical tools and platforms does he use?**
+- _What is Ali Mohamed's current job title and where does he work?_
+- _What are Ali Mohamed's core areas of expertise?_
+- _What technical tools and platforms does he use?_
 """)
 
 # Generate simple math challenge
